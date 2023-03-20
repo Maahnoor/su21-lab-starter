@@ -73,14 +73,16 @@ void reverse_list(struct Node **head) {
 /* Creates a new node with a data field set to DATA and adds the node
    to the back of the list pointed to by HEAD */
 void add_to_back(Node **head, int data) {
-    if (*head == NULL) {
+    if (head ==NULL || *head == NULL) {
         *head= create_node(data);
         return;
     }
+    else{
     Node *new_node = create_node(data);
     Node *prev;
     for (Node *curr = *head; curr != NULL; curr = curr->next) {
         prev = curr;
     }
     prev->next = new_node;
+    }
 }
