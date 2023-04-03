@@ -66,20 +66,32 @@ map:
     # are modified by the callees, even when we know the content inside the functions 
     # we call. this is to enforce the abstraction barrier of calling convention.
 mapLoop:
-    add t1, s0, x0      # load the address of the array of current node into t1
+    #### MISTAKE add t1,s0,x0 will put the address saved in s0 to t1 while we require to access the value stored at stack on adress saved in s0
+    lw t1, 0(s0)        # load the address of the array of current node into t1
     lw t2, 4(s0)        # load the size of the node's array into t2
-
-    add t1, t1, t0      # offset the array address by the count
+    
+    add t3,t0,x0
+    slli t3,t3,2        #### MISTAKE offset not calculated properly
+    add t1, t1, t3      # offset the array address by the count
     lw a0, 0(t1)        # load the value at that address into a0
-
+    
+    ### MISTAKE t1 is altered by the mystery function, so we need to save it on the stack before function call
+    addi sp,sp, -8      ############
+    sw t1, 0(sp)        ############
+    sw t0, 4(sp)
     jalr s1             # call the function on that value.
+    
+    #### restoring t1 back
+    lw t1, 0(sp)        ################
+    lw t0, 4(sp)
+    addi sp,sp, 8       ###############
 
     sw a0, 0(t1)        # store the returned value back into the array
     addi t0, t0, 1      # increment the count
     bne t0, t2, mapLoop # repeat if we haven't reached the array size yet
 
-    la a0, 8(s0)        # load the address of the next node into a0
-    lw a1, 0(s1)        # put the address of the function back into a1 to prepare for the recursion
+    lw a0, 8(s0)        ####### MISTAKE lw instead of la load the address of the next node into a0
+#     lw a1, 0(s1)      ####### MISTAKE  function address will is added in line 57
 
     jal  map            # recurse
 done:
@@ -87,6 +99,7 @@ done:
     lw s1, 4(sp)
     lw ra, 0(sp)
     addi sp, sp, 12
+    ret                  ###### MISTAKE return statement missing, causing newlines to be printed
 
 print_newline:
     li a1, '\n'
