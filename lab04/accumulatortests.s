@@ -2,6 +2,7 @@
 
 .data
 inputarray: .word 1,2,3,4,5,6,7,0
+# inputarray: .word 0  ### accumulatorfive
 
 TestPassed: .asciiz "Test Passed!"
 TestFailed: .asciiz "Test Failed!"
@@ -16,7 +17,17 @@ TestFailed: .asciiz "Test Failed!"
 #Modify the test so that you can catch the bugs in four of the five solutions!
 main:
     la a0 inputarray
-    jal accumulatorone
+#     li t2, 13           ## uncomment for accumulatorfour /accumulatorone/accumulatortwo check
+#     li t4, 13           ## accumulatortwo
+#     li s0, 13           ## accumulatorone
+#     addi sp,sp,-8       ## accumulatortwo
+#     sw t2, 0(sp)        ## accumulatortwo
+#     sw t4, 4(sp)        ## accumulatortwo
+    jal accumulatorthree
+#     lw t2,0(sp)         ## accumulatortwo
+#     lw t4,4(sp)         ## accumulatortwo
+#     bne t2,t4,Fail      ## accumulatortwo
+#     bne s0,t2,Fail      ## accumulatorone 
     li t0 28
     beq a0 t0 Pass
 Fail:
